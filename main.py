@@ -31,7 +31,7 @@ def create_excel():
 
 
 def load_excel():
-    wb = openpyxl.load_workbook('data/data.xlsx')
+    wb = openpyxl.load_workbook('data.xlsx')
     ws_p = wb['要求']
     ws_data = wb['原始数据']
 
@@ -47,20 +47,30 @@ def load_excel():
     for cell in ws_filter[1]:
         cell.fill = PatternFill("solid", fgColor="47A1A1")
 
+    if wb.__contains__('未筛选数据'):
+        ws_un_filter = wb['未筛选数据']
+        wb.remove(ws_un_filter)
+    ws_un_filter = wb.create_sheet('未筛选数据')
+    ws_un_filter.append(tuple(title_list))
+    for cell in ws_un_filter[1]:
+        cell.fill = PatternFill("solid", fgColor="47A1A1")
+
     count = 0
     for data_row in ws_data.iter_rows(min_row=2, values_only=True):
         data_name = data_row[2]
         data_owner = data_row[6]
-        data_num = data_row[7]
+        data_num = data_row[7] or 0
+        selected = False
+
         for row in ws_p.iter_rows(min_row=2, values_only=True):
             product_name = row[0]
             product_owner = row[4]
             product_ext = row[5:11]
             # print('product name: %s, product owner: %s' % (product_name, product_owner))
             if product_name == data_name and product_owner == data_owner:
-                amount1 = product_ext[2] * data_num
-                amount2 = product_ext[3] * data_num
-                amount3 = product_ext[4] * data_num
+                amount1 = (product_ext[2] or 0) * data_num
+                amount2 = (product_ext[3] or 0) * data_num
+                amount3 = (product_ext[4] or 0) * data_num
                 product_ext_list = list(product_ext)
                 product_ext_list.insert(5, amount3)
                 product_ext_list.insert(4, amount2)
@@ -69,10 +79,14 @@ def load_excel():
                 ws_filter.append(data_row)
                 print(data_row)
                 count += 1
+                selected = True
                 break
 
+        if not selected:
+            ws_un_filter.append(data_row)
+
     print('数据处理完成...\n共生成%d条记录' % count)
-    wb.save('data/data.xlsx')
+    wb.save('data.xlsx')
 
 
 # Press the green button in the gutter to run the script.
