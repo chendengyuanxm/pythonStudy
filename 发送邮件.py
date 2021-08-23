@@ -12,10 +12,11 @@ def _format_addr(s):
 
 
 from_addr = "linux_redhat@sina.com"
-from_passwd = "5566123ogmw"
+from_passwd = "xxxxxxxx"
 to_addr = ['489543181@qq.com']
 
 smtp_obj = smtplib.SMTP_SSL("smtp.sina.com", 465)
+# smtp_obj = smtplib.SMTP("smtp.sina.com", 25)
 smtp_obj.login(from_addr, from_passwd)
 smtp_obj.set_debuglevel(1)
 
@@ -38,7 +39,13 @@ with open('main.py', 'rb') as f:
     att1['Content-Disposition'] = 'attachment;filename="main.py"'
     msg.attach(att1)
 
-with open('20190308115530905.png', 'rb') as f:
+with open('医药筛选系统.py', 'rb') as f:
+    att2 = MIMEText(f.read(), 'base64', 'utf-8')
+    att2['Content-Type'] = 'application/octet-stream'
+    att2['Content-Disposition'] = 'attachment;filename="医药筛选系统.py"'
+    msg.attach(att2)
+
+with open('data/20190308115530905.png', 'rb') as f:
     image = MIMEImage(f.read())
     image.add_header('Content-ID', '<image1>')
     msg.attach(image)
