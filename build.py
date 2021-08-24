@@ -19,7 +19,6 @@ def del_file(filepath):
 
 build_file = '医药筛选系统.py'
 file_name = build_file.split('.')[0]
-print(file_name)
 cwd = os.getcwd()
 
 os.system('pip install pyinstaller')
@@ -32,7 +31,8 @@ dist_dir = cwd + '\\dist'
 if os.path.exists(dist_dir):
     del_file(dist_dir)
 
+os.system('chcp 65001')  # 解决中文乱码问题
 os.system('pyinstaller -D -w %s' % build_file)
-os.system('cp data dist\\%s' % file_name)
+os.system('copy data dist\\%s' % file_name)
 
 
