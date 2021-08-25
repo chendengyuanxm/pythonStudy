@@ -14,7 +14,10 @@ attach_window = None
 thin = Side(border_style="thin", color="000000")
 double = Side(border_style="double", color="ff0000")
 
-wb_map = openpyxl.load_workbook('data/map.xlsx')
+data_file = 'data/data.xlsx'
+map_file = 'data/map.xlsx'
+
+wb_map = openpyxl.load_workbook(map_file)
 ws_map_owner = wb_map['单位']
 ws_map_name = wb_map['名称']
 ws_map_unit = wb_map['规格']
@@ -37,7 +40,7 @@ for cell in ws_same_owner[1]:
     cell.fill = PatternFill("solid", fgColor="47A1A1")
 
 
-wb = openpyxl.load_workbook('data/data.xlsx')
+wb = openpyxl.load_workbook(data_file)
 ws_p = wb['要求']
 ws_data = wb['原始数据']
 
@@ -77,8 +80,8 @@ def load_excel():
         filter_data(data_row)
 
     print_log('数据处理完成...\n共%d条记录，筛选%d条记录' % (total,count))
-    wb.save('data/data.xlsx')
-    wb_map.save('data/map.xlsx')
+    wb.save(data_file)
+    wb_map.save(map_file)
 
 
 def filter_data(data_row):
@@ -86,18 +89,21 @@ def filter_data(data_row):
     if attach_window is not None:
         attach_window.update_progress(count, total)
     data_value_list = list(map(lambda v: v.value, data_row))
-    data_name = data_row[2].value
-    data_unit = data_row[3].value
-    data_factory = data_row[5].value
-    data_owner = data_row[6].value
+    data_name = data_row[2].value or ''
+    data_unit = data_row[3].value or ''
+    data_factory = data_row[5].value or ''
+    data_owner = data_row[6].value or ''
     data_num = data_row[7].value or 0
     selected = False
 
+    if data_name is None and data_owner is None and data_factory is None:
+        return
+
     for row in ws_p.iter_rows(min_row=2, values_only=True):
-        product_name = row[0]
-        product_unit = row[1]
-        product_factory = row[2]
-        product_owner = row[4]
+        product_name = row[0] or ''
+        product_unit = row[1] or ''
+        product_factory = row[2] or ''
+        product_owner = row[4] or ''
         product_ext = row[5:11]
         # print_log('product name: %s, product owner: %s' % (product_name, product_owner))
         # print_log('data name: %s, data owner: %s' % (data_name, data_owner))
@@ -175,7 +181,7 @@ def uni_product_name():
                     row[5].value = default_name
 
     print_log('统一筛选列表数据完成...')
-    wb.save('data/data.xlsx')
+    wb.save(data_file)
 
 
 def is_equal(sheet, str1, str2):
