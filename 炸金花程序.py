@@ -160,10 +160,10 @@ def get_level_name(lst):
 
 # 生成牌
 cards = []
-cards1 = [Card('♡', n) for n in range(2, 15)]
-cards2 = [Card('♥', n) for n in range(2, 15)]
+cards1 = [Card('♥', n) for n in range(2, 15)]
+cards2 = [Card('♠', n) for n in range(2, 15)]
 cards3 = [Card('♣', n) for n in range(2, 15)]
-cards4 = [Card('♢', n) for n in range(2, 15)]
+cards4 = [Card('♦', n) for n in range(2, 15)]
 cards.extend(cards1)
 cards.extend(cards2)
 cards.extend(cards3)
