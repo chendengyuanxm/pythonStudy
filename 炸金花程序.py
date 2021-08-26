@@ -8,10 +8,22 @@ class Card:
         self.number = number
 
     def __str__(self) -> str:
-        return '(%s, %s)' % (self.color, self.number)
+        return '(%s, %s)' % (self.color, self.map_number)
 
     def __repr__(self):
-        return repr((self.color, self.number))
+        return repr("%s%s" % (self.color, self.map_number(self.number)))
+
+    @staticmethod
+    def map_number(number):
+        if number == 14:
+            return 'A'
+        elif number == 13:
+            return 'K'
+        elif number == 12:
+            return 'Q'
+        elif number == 11:
+            return 'J'
+        return number
 
 
 def is_bomb(lst):
@@ -40,7 +52,9 @@ def is_sequence(lst):
     lst = sorted(lst, key=lambda c: c.number, reverse=True)
     pre = lst[0]
     for l in lst[1:]:
-        if l.number != pre.number + 1:
+        if pre.number == 14 and l.number == 2:
+            return True
+        elif l.number != pre.number + 1:
             return False
         pre = l
 
@@ -110,7 +124,6 @@ def comp(lst1, lst2):
     level1 = get_level(lst1)
     level2 = get_level(lst2)
     sub = level2 - level1
-    print(level1, level2, sub)
 
     if sub != 0:
         return sub
@@ -129,23 +142,40 @@ def comp(lst1, lst2):
         return comp_number(lst1, lst2)
 
 
+def get_level_name(lst):
+    level = get_level(lst)
+    if level == 1:
+        return '炸弹'
+    elif level == 2:
+        return '同花顺'
+    elif level == 3:
+        return '同花'
+    elif level == 4:
+        return '顺子'
+    elif level == 5:
+        return '对子'
+    elif level == 6:
+        return '普通牌'
+
+
 # 生成牌
 cards = []
-cards1 = [Card('A', n) for n in range(2, 15)]
-cards2 = [Card('B', n) for n in range(2, 15)]
-cards3 = [Card('C', n) for n in range(2, 15)]
-cards4 = [Card('D', n) for n in range(2, 15)]
+cards1 = [Card('♡', n) for n in range(2, 15)]
+cards2 = [Card('♥', n) for n in range(2, 15)]
+cards3 = [Card('♣', n) for n in range(2, 15)]
+cards4 = [Card('♢', n) for n in range(2, 15)]
 cards.extend(cards1)
 cards.extend(cards2)
 cards.extend(cards3)
 cards.extend(cards4)
 random.shuffle(cards)
-print(cards)
+print('洗牌-->\n', cards)
 
 # 发牌
 count = 3
 peoples = 5
 
+print('发牌-->')
 delivered_cards = []
 for i in range(peoples):
     p_card = []
@@ -153,16 +183,21 @@ for i in range(peoples):
         c = random.choice(cards)
         cards.remove(c)
         p_card.append(c)
-    delivered_cards.append(p_card)
-print(delivered_cards)
+    delivered_cards.append({
+        'id': i+1,
+        'name': '%d号' % (i+1),
+        'card': p_card
+    })
+    print('%s号牌：%s' % (i+1, p_card))
 
 # 比大小
-# r = comp(delivered_cards[0], delivered_cards[1])
 n = len(delivered_cards)
 for i in range(n-1):
     for j in range(i, n):
-        if comp(delivered_cards[i], delivered_cards[j]) > 0:
+        if comp(delivered_cards[i]['card'], delivered_cards[j]['card']) > 0:
             temp = delivered_cards[i]
             delivered_cards[i] = delivered_cards[j]
             delivered_cards[j] = temp
-print(delivered_cards)
+print('按牌从小到大-->')
+for i in delivered_cards:
+    print('%s号牌: %s %s' % (i['id'], sorted(i['card'],  key=lambda c:c.number), get_level_name(i['card'])))
