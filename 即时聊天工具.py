@@ -2,7 +2,7 @@ import socket
 import time
 from threading import Thread
 
-host = '127.0.0.1'
+host = socket.gethostbyname(socket.gethostname())
 port = 9001
 buff = 1024
 
@@ -27,7 +27,7 @@ def receive_message():
 
 def send_message():
     while True:
-        msg = input('服务端：\n')
+        msg = input('>：\n')
         _send(msg)
 
 
@@ -42,8 +42,9 @@ def main():
     s = socket.socket()
     s.bind((host, port))
     s.listen(15)
+    print('服务器开启[%s:%s]...' % (host, port))
     conn, addr = s.accept()
-    print('聊天服务准备就绪...')
+    print('聊天服务器准备就绪[%s:%s]...' % (host, port))
 
     rec_thread = Thread(target=receive_message)
     rec_thread.start()
