@@ -1,4 +1,5 @@
 import socket
+import sys
 import time
 from threading import Thread
 
@@ -28,7 +29,11 @@ def receive_message():
 def send_message():
     while True:
         msg = input('>：\n')
-        _send(msg)
+        if msg == 'q':
+            s.close()
+            sys.exit(0)
+        else:
+            _send(msg)
 
 
 def _send(msg):
@@ -39,7 +44,8 @@ def _send(msg):
 def main():
     global s
     global conn, addr
-    s = socket.socket()
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # 设置端口可立即重用
     s.bind((host, port))
     s.listen(15)
     print('服务器开启[%s:%s]...' % (host, port))

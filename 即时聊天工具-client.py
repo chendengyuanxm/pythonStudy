@@ -2,11 +2,8 @@ import socket
 import time
 from threading import Thread
 import re
+import sys
 
-# host = '127.0.0.1'
-# host = '172.26.240.1'
-# host = '121.207.145.1'
-# host = '27.154.235.50'
 port = 9001
 buff = 1024
 global s
@@ -27,7 +24,11 @@ def receive_message():
 def send_message():
     while True:
         msg = input('>：\n')
-        _send(msg)
+        if msg == 'q':
+            s.close()
+            sys.exit(0)
+        else:
+            _send(msg)
 
 
 def _send(msg):
@@ -51,7 +52,8 @@ def _input_host():
 def main():
     global s
     host = _input_host()
-    s = socket.socket()
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # 设置端口可立即重用
     s.connect((host, port))
     _send('Y')
 
